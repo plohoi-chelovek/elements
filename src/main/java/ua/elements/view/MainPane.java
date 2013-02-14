@@ -26,18 +26,50 @@ public class MainPane extends Composite {
 	options.pack();
 
 	arrival = new ArrivalPane(this, SWT.NONE);
+	arrival.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
 	arrival.pack();
 	arrival.setVisible(false);
 
 	charge = new ChargePane(this, SWT.NONE);
+	charge.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
 	charge.pack();
 	charge.setVisible(false);
 
 	service = new ServicePane(this, SWT.NONE);
+	service.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
 	service.pack();
 	service.setVisible(false);
 
 	register = new RegisterPane(this, SWT.NONE);
+	register.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
 	register.pack();
 	register.setVisible(false);
 

@@ -17,7 +17,7 @@ public class ProductManagement {
     }
     
     public void insert(Product product) {
-    	dm.template.update("INSERT INTO product (name, price, count, time) VALUES(?,?,?)",
+    	dm.template.update("INSERT INTO product (name, price, count, time) VALUES(?,?,?,?)",
     			   new Object[] {product.getName(), product.getPrice(), product.getCount(), 
     					 product.getTime()});
 	fireProductInserted(product);
@@ -30,7 +30,7 @@ public class ProductManagement {
     }
     
     public List<Product> selectAll() {
-    	return dm.template.query("SELECT name, price, time FROM service",
+    	return dm.template.query("SELECT name, price, count, time FROM product",
     				 new RowMapper<Product>() {
     				     public Product mapRow(ResultSet rs, int rofwNum) {
     					 try {
@@ -46,14 +46,14 @@ public class ProductManagement {
     }
 
     public List<Product> selectAllCharge() {
-    	return dm.template.query("SELECT name, price, time FROM service",
+    	return dm.template.query("SELECT name, count, time FROM charge",
     				 new RowMapper<Product>() {
     				     public Product mapRow(ResultSet rs, int rowNum) {
     					 try {
     					     return new Product(rs.getString("name"),
-    								rs.getDouble("price"),
-								0,
-    								rs.getTimestamp("time"));
+    								0.0,
+								rs.getInt("count"),
+								rs.getTimestamp("time"));
     					 } catch (SQLException e) {
     					     throw new RuntimeException(e.getMessage());
     					 }

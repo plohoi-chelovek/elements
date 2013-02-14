@@ -12,6 +12,7 @@ public class OptionsPanel extends Composite {
     private Color background = new Color(null, 255, 255, 255);
     private Color foreground = new Color(null, 0, 175, 240);
 
+    private FileDialog syncDialog;
     private ImageLabel syncLabel;
 
     private ImageLabel arrivalLabel;
@@ -26,9 +27,20 @@ public class OptionsPanel extends Composite {
 	setLayout(new OptionsPanelLayout());
 	// setBackground(background);
 	setBackgroundImage(new Image(null, getClass().getResourceAsStream("/background.png")));
+
+	syncDialog = new FileDialog(getShell(), SWT.OPEN);
+	syncDialog.setFilterNames(new String [] {"DB Files"});
+	syncDialog.setFilterExtensions(new String [] {"*.db"});
+	syncDialog.setFilterPath(System.getProperty("user.home"));
+
 	syncLabel = new ImageLabel(this, SWT.NONE, 20, 5, 20, 0);
 	syncLabel.setText("");
 	syncLabel.setImage(new Image(null, getClass().getResourceAsStream("/sync.png")));
+	syncLabel.addMouseListener(new MouseAdapter() {
+		public void mouseUp(MouseEvent e) {
+		    syncDialog.open();
+		}
+	    });
 
 	arrivalLabel = new ImageLabel(this, SWT.NONE);
 	arrivalLabel.setText("Приход", "Товара");
