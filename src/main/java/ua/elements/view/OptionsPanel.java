@@ -1,5 +1,9 @@
 package ua.elements.view;
 
+import ua.elements.*;
+
+import java.io.*;
+
 import javax.swing.event.EventListenerList;
 
 import org.eclipse.swt.*;
@@ -38,7 +42,10 @@ public class OptionsPanel extends Composite {
 	syncLabel.setImage(new Image(null, getClass().getResourceAsStream("/sync.png")));
 	syncLabel.addMouseListener(new MouseAdapter() {
 		public void mouseUp(MouseEvent e) {
-		    syncDialog.open();
+		    String file = syncDialog.open();
+		    if (file != null)
+			if (App.getDataManagement().sync(new File(file)))
+			    
 		}
 	    });
 

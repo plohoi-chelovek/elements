@@ -1,6 +1,7 @@
 package ua.elements.model;
 
 import java.io.*;
+import java.sql.*;
 
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.datasource.*;
@@ -63,8 +64,33 @@ public class DataManagement {
     }
     
     public boolean sync(File syncFile) {
-	System.out.println(syncFile + " Need sync");
+	try {
+	    template.getDataSource().getConnection().close();
+	    File h2File = new File(programDir, dbName + ".h2.db");
+	    h2File.delete();
+	    h2File.createNewFile();
+	    newDbFile(syncFile);
+	} catch (Exception e) {
+	    throw new RuntimeException(e.getMessage());
+	}
 	return true;
+    }
+
+    private void newDbFile(File syncFile) {
+	InputStream is = null;
+	OutputStream os = null;
+	try {
+	    is = new FileInputStream(syncFile);
+	    os = new FileOutputStream(new File(programDir, dbName + ".h2.db"));
+	    byte[] buffer = new byte[1024];
+	    int length = 0;
+	    while ((length = is.read(buffer)) > 0)
+		os.write(buffer, 0, length);
+	    is.close();
+	    os.close();
+	} catch (IOException e) {
+	    throw new RuntimeException(e.getMessage());
+	}
     }
 
     /* TESTING */
