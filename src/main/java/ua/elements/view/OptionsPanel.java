@@ -19,6 +19,8 @@ public class OptionsPanel extends Composite {
     private FileDialog syncDialog;
     private ImageLabel syncLabel;
 
+    private MessageBox messageDialog;
+
     private ImageLabel arrivalLabel;
     private ImageLabel chargeLabel;
     private ImageLabel servicesLabel;
@@ -31,6 +33,9 @@ public class OptionsPanel extends Composite {
 	setLayout(new OptionsPanelLayout());
 	// setBackground(background);
 	setBackgroundImage(new Image(null, getClass().getResourceAsStream("/background.png")));
+
+	messageDialog = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+	messageDialog.setMessage("Для дальнейшей работы программы необходима перезагрузка");
 
 	syncDialog = new FileDialog(getShell(), SWT.OPEN);
 	syncDialog.setFilterNames(new String [] {"DB Files"});
@@ -45,7 +50,7 @@ public class OptionsPanel extends Composite {
 		    String file = syncDialog.open();
 		    if (file != null)
 			if (App.getDataManagement().sync(new File(file)))
-			    
+			    messageDialog.open();
 		}
 	    });
 
