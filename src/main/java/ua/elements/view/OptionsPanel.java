@@ -18,8 +18,11 @@ public class OptionsPanel extends Composite {
 
     private FileDialog syncDialog;
     private ImageLabel syncLabel;
+    private MessageBox syncMessageDialog;
 
-    private MessageBox messageDialog;
+    private FileDialog backupDialog;
+    private ImageLabel backupLabel;
+    private MessageBox backupMessageDialog;
 
     private ImageLabel arrivalLabel;
     private ImageLabel chargeLabel;
@@ -34,8 +37,8 @@ public class OptionsPanel extends Composite {
 	// setBackground(background);
 	setBackgroundImage(new Image(null, getClass().getResourceAsStream("/background.png")));
 
-	messageDialog = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-	messageDialog.setMessage("Для дальнейшей работы программы необходима перезагрузка");
+	syncMessageDialog = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+	syncMessageDialog.setMessage("Для дальнейшей работы программы необходима перезагрузка");
 
 	syncDialog = new FileDialog(getShell(), SWT.OPEN);
 	syncDialog.setFilterNames(new String [] {"DB Files"});
@@ -50,7 +53,29 @@ public class OptionsPanel extends Composite {
 		    String file = syncDialog.open();
 		    if (file != null)
 			if (App.getDataManagement().sync(new File(file)))
-			    messageDialog.open();
+			    syncMessageDialog.open();
+		}
+	    });
+
+	backupMessageDialog = new MessageBox(getShell(), SWT.ERROR | SWT.OK);
+	backupMessageDialog.setMessage("Невозможно сохранить дамп. Попробуйте указать другой файл");
+
+	backupDialog = new FileDialog(getShell(), SWT.SAVE);
+	backupDialog.setFilterNames(new String [] {"DB Files"});
+	backupDialog.setFilterExtensions(new String [] {"*.db"});
+	backupDialog.setFileName("data.h2.db");
+	backupDialog.setFilterPath(System.getProperty("user.home"));
+
+	backupLabel = new ImageLabel(this, SWT.NONE, 20, 5, 20, 0);
+	backupLabel.setText("");
+	backupLabel.setImage(new Image(null, getClass().getResourceAsStream("/backup.png")));
+	backupLabel.addMouseListener(new MouseAdapter() {
+		public void mouseUp(MouseEvent e) {
+		    String file = backupDialog.open();
+		    if (file != null) 
+			if (!App.getDataManagement().dump(new File(file))) {
+			    backupMessageDialog.open();
+			}
 		}
 	    });
 
@@ -62,6 +87,7 @@ public class OptionsPanel extends Composite {
 		}
 	    });
 	arrivalLabel.setImage(new Image(null, getClass().getResourceAsStream("/add.png")));
+
 	chargeLabel = new ImageLabel(this, SWT.NONE);
 	chargeLabel.setText("Расход", "Товара");
 	chargeLabel.addMouseListener(new MouseAdapter() {
@@ -146,6 +172,7 @@ public class OptionsPanel extends Composite {
 				    registerLabel.computeSize(SWT.NONE, SWT.NONE, false).x,
 				    registerLabel.computeSize(SWT.NONE, SWT.NONE, false).y);
 	    syncLabel.setLocation(getSize().x - syncLabel.getSize().x, 0);
+	    backupLabel.setLocation(syncLabel.getLocation().x - backupLabel.getSize().x, 0);
 	}
     }
 

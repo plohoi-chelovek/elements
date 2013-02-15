@@ -76,6 +76,29 @@ public class DataManagement {
 	return true;
     }
 
+    public boolean dump(File dumpFile) {
+	if (dumpFile.exists())
+	    return false;
+	File h2File = new File(programDir, dbName + ".h2.db");
+
+	InputStream is = null;
+	OutputStream os = null;
+	try {
+	    dumpFile.createNewFile();
+	    is = new FileInputStream(h2File);
+	    os = new FileOutputStream(dumpFile);
+	    byte[] buffer = new byte[1024];
+	    int length = 0;
+	    while ((length = is.read(buffer)) > 0)
+		os.write(buffer, 0, length);
+	    is.close();
+	    os.close();
+	} catch (IOException e) {
+	    throw new RuntimeException(e.getMessage());
+	}
+	return true;
+    }    
+
     private void newDbFile(File syncFile) {
 	InputStream is = null;
 	OutputStream os = null;
