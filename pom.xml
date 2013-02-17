@@ -36,7 +36,7 @@
 	</executions>
         <configuration>
 	  <mainClass>ua.elements.App</mainClass>
-	  <!-- <mainClass>ua.elements.view.SyncDialog</mainClass> -->
+	  <!-- <mainClass>ua.elements.view.GraphPane</mainClass> -->
         </configuration>
       </plugin>
     </plugins>

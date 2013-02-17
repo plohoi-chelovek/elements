@@ -1,8 +1,14 @@
 package ua.elements.view;
 
+import ua.elements.*;
+import ua.elements.model.*;
+
+import java.util.Arrays;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 public class MainPane extends Composite {
@@ -12,11 +18,14 @@ public class MainPane extends Composite {
     private ChargePane charge;
     private ServicePane service;
     private RegisterPane register;
+    private GraphPane graph;
+    private BalancePane balance;
     private Composite current;
 
     public MainPane(Composite parent, int style) {
 	super(parent, style);
 	((Shell)parent).setLayout(new FillLayout());
+	setMenuBar((Shell)parent);
 
 	setBackground(background);
 	setLayout(new MainPaneLayout());
@@ -73,7 +82,38 @@ public class MainPane extends Composite {
 	register.pack();
 	register.setVisible(false);
 
+	balance = new BalancePane(this, SWT.NONE);
+	balance.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
+	balance.pack();
+	balance.setVisible(false);
+
 	current = options;
+    }
+
+    private void setMenuBar(Shell shell) {
+	   Menu menuBar = new Menu(shell, SWT.BAR);
+
+	   MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+	   fileMenuHeader.setText("Файл");
+
+	   Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
+	   fileMenuHeader.setMenu(fileMenu);
+
+	   MenuItem fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
+	   fileExitItem.setText("Выход");
+	   fileExitItem.addSelectionListener(new SelectionAdapter() {
+		   public void widgetSelected(SelectionEvent e) {
+		       System.exit(0);
+		   }
+	       });
+	   shell.setMenuBar(menuBar);
     }
 
     /* INNER CLASS PART */
@@ -89,6 +129,7 @@ public class MainPane extends Composite {
 	    // int y = (getSize().y - current.computeSize(SWT.DEFAULT, SWT.DEFAULT, false).y) / 2;
 	    // System.out.printf("%d %d", getSize().x, current.computeSize(SWT.DEFAULT, SWT.DEFAULT, false).x);
 	    current.setBounds(0, 0, getSize().x, getSize().y);
+	    current.redraw();
 	}
     }
 
@@ -103,6 +144,9 @@ public class MainPane extends Composite {
 		current = service;
 	    else if (event.getOption().equals("registerOption"))
 		current = register;
+	    else if (event.getOption().equals("balanceOption")) {
+		current = balance;
+	    }
 	    current.setVisible(true);
 	    layout(true);
 	}

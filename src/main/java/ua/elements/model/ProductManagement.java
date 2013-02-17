@@ -45,6 +45,7 @@ public class ProductManagement {
     				 });
     }
 
+
     public List<Product> selectAllCharge() {
     	return dm.template.query("SELECT name, count, time FROM charge",
     				 new RowMapper<Product>() {
@@ -59,6 +60,23 @@ public class ProductManagement {
     					 }
     				     }
     				 });
+    }
+
+    public double[] getValues() {
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTime(new java.util.Date());
+	int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+	double[] values = new double[days];
+
+	for (int i = 0; i < values.length; i++)
+	    values[i] = 0.0;
+
+	for (Product product : selectAll()) {
+	    cal.setTime(product.getTime());
+	    values[cal.get(Calendar.DAY_OF_MONTH) - 1] += product.getPrice();
+	}
+	    
+	return values;
     }
 
 

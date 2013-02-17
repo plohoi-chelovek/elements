@@ -13,45 +13,40 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 
-public class ServicePane extends Composite {
+public class BalancePane extends Composite {
     private Color background = new Color(null, 255, 255, 255);
     private Color foreground = new Color(null, 0, 175, 240);
-    private Text name;
-    private Text price;
+    private Text debit;
 
     private EventListenerList listeners = new EventListenerList();
     
-    public ServicePane(Composite parent, int style) {
+    public BalancePane(Composite parent, int style) {
 	super(parent, style);
 	setBackground(background);
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 2;
 	setLayout(layout);
 
-	Label nameLabel = new Label(this, SWT.NONE);
-	nameLabel.setText("Наименование услуги");
-	nameLabel.setBackground(background);
-	nameLabel.setForeground(foreground);
+	Label debitLabel = new Label(this, SWT.NONE);
+	debitLabel.setText("Прибыль");
+	debitLabel.setBackground(background);
+	debitLabel.setForeground(foreground);
 
-	name = new Text(this, SWT.BORDER);
-	GridData nameData = new GridData();
-	nameData.widthHint = 200;
-	name.setLayoutData(nameData);
-
-	Label priceLabel = new Label(this, SWT.NONE);
-	priceLabel.setText("Стоимость");
-	priceLabel.setBackground(background);
-	priceLabel.setForeground(foreground);
-
-	price = new Text(this, SWT.BORDER);
-	GridData priceData = new GridData();
-	priceData.widthHint = 200;
-	price.setLayoutData(priceData);
+	debit = new Text(this, SWT.BORDER);
+	GridData debitData = new GridData();
+	debitData.widthHint = 200;
+	debit.setLayoutData(debitData);
 
 	ButtonsPane buttonsPane = new ButtonsPane(this, SWT.NONE);
 	GridData data = new GridData();
 	data.horizontalSpan = 2;
 	buttonsPane.setLayoutData(data);
+
+	double d = 0;
+	for (Product product : App.getDataManagement().getProductManagement().selectAll()) {
+	    d += product.getPrice();
+	}
+	debit.setText("" + d);
     }
 
     public void addChoiceListener(ChoiceListener l) {
@@ -81,21 +76,8 @@ public class ServicePane extends Composite {
 	    setLayout(new RowLayout());
 	    setBackground(background);
 	    okButton = new Button(this, SWT.PUSH);
-	    okButton.setText("Добавить");
+	    okButton.setText("Вернуться");
 	    okButton.addSelectionListener(new SelectionAdapter() {
-		    public void widgetSelected(SelectionEvent e) {
-			try {
-			    Service service = new Service(name.getText(),
-							  Double.parseDouble(price.getText()),
-							  new Date());
-			    App.getDataManagement().getServiceManagement().insert(service);
-			} catch (NumberFormatException ex) { }
-			fireChoiceSelected("add");
-		    }
-		});
-	    cancelButton = new Button(this, SWT.PUSH);
-	    cancelButton.setText("Отмена");
-	    cancelButton.addSelectionListener(new SelectionAdapter() {
 		    public void widgetSelected(SelectionEvent e) {
 			fireChoiceSelected("cancel");
 		    }
@@ -103,20 +85,5 @@ public class ServicePane extends Composite {
 	}
     }
 
-
-    /* TESTING */
-    public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	ServicePane servicePane = new ServicePane(shell, SWT.NONE);
-	shell.setLayout(new FillLayout());
-	shell.open();
-	shell.pack();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) 
-		display.sleep();
-	}
-	display.dispose();    
-    }
 }
     
