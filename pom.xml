@@ -36,7 +36,7 @@
 	</executions>
         <configuration>
 	  <!-- <mainClass>ua.elements.App</mainClass> -->
-	  <mainClass>ua.elements.view.GraphPane</mainClass>
+	  <mainClass>ua.elements.view.GraphView</mainClass>
         </configuration>
       </plugin>
     </plugins>
