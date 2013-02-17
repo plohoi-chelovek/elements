@@ -9,16 +9,47 @@ import org.eclipse.swt.layout.*;
 public class GraphView extends Composite {
     private GraphPane graphPane;
 
+    private Combo year;
+    private String[] yearTitles = {"2012", "2013", "2014"};
+    private Combo month;
+    private String[] monthTitles = {"Январь", "Февраль", "Март", "Апрель",
+				    "Май", "Июнь", "Июль", "Август",
+				    "Сентябрь", "Октябрь",  "Ноябрь" , "Декабрь"};
+    private Combo day;
+
+    private Button show;
+
     public GraphView(Composite parent, int style) {
 	super(parent, style);
-	setLayout(new FillLayout());
+
+	GridLayout layout = new GridLayout();
+	layout.numColumns = 3;
+	setLayout(layout);
+
 	graphPane = new GraphPane(this, SWT.NONE);
+	GridData graphData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+	graphData.widthHint = 400;
+	graphPane.setLayoutData(graphData);
+	
+	year = new Combo(this, SWT.NONE);
+	year.setItems(yearTitles);
+	year.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+
+	month = new Combo(this, SWT.NONE);
+	month.setItems(monthTitles);
+	month.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+
+	day = new Combo(this, SWT.NONE);
+	day.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	
+	show = new Button(this, SWT.NONE);
+	show.setText("Показать");
+	show.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
     }
 
     public void setValues(double[] values) {
 	graphPane.setValues(values);
     }
-    
 
     private class GraphPane extends Composite {
 	private double[] values = {0.0};
@@ -48,14 +79,16 @@ public class GraphView extends Composite {
 	}
 
 	public void paintControl(PaintEvent e) {
-	    if (leftPadding == -1)
-		leftPadding = e.gc.textExtent(getMaxValue() + "").x;
-	    e.gc.drawLine(leftPadding, topPadding, leftPadding, getSize().y - bottomPadding);
-	    e.gc.drawLine(leftPadding, getSize().y - bottomPadding, getSize().x - rightPadding,
-			  getSize().y - bottomPadding);
-	    drawAbscissaNumbers(e);
-	    drawOrdinateNumbers(e);
-	    drawContent(e);
+	    if (getSize().x > 50 && getSize().y > 50) {
+		if (leftPadding == -1)
+		    leftPadding = e.gc.textExtent(getMaxValue() + "").x;
+		e.gc.drawLine(leftPadding, topPadding, leftPadding, getSize().y - bottomPadding);
+		e.gc.drawLine(leftPadding, getSize().y - bottomPadding, getSize().x - rightPadding,
+			      getSize().y - bottomPadding);
+		drawAbscissaNumbers(e);
+		drawOrdinateNumbers(e);
+		drawContent(e);
+	    }
 	}
 
 	private void drawAbscissaNumbers(PaintEvent e) {
