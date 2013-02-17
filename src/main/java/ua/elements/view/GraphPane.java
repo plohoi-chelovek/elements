@@ -12,12 +12,19 @@ public class GraphPane extends Composite {
     private int leftPadding = 10;
     private int rightPadding = 20;
     private int topPadding = 10;
-    private int bottomPadding = 20;
+    private int bottomPadding = 40;
 
     private double maxValue = -1;
 
+    private Color background = new Color(null, 0, 175, 240);
+    private Color background2 = new Color(null, 255, 255, 255);
+
+    private Font font = new Font(null, "Courier", 12, SWT.BOLD);
+
     public GraphPane(Composite parent, int style) {
 	super(parent, style);
+	setBackground(background2);
+	setFont(font);
 	setLayout(new GraphPaneLayout());
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent e) {
@@ -34,25 +41,37 @@ public class GraphPane extends Composite {
 		      getSize().y - bottomPadding);
 	drawAbscissaNumbers(e);
 	drawOrdinateNumbers(e);
+	drawContent(e);
     }
 
-    public void drawAbscissaNumbers(PaintEvent e) {
-	for (int i = 1; i <= values.length; i++) {
-	    e.gc.drawText(i + "", getPoint(i, 0).x + leftPadding,
-			  getSize().y - bottomPadding - getPoint(i, 0).y - 10);
-		
+    private void drawAbscissaNumbers(PaintEvent e) {
+	for (int i = 1, x = 0; i <= values.length; i++) {
+	    x = (int)(getPoint(i, 0).x + leftPadding - getXStep() / 2 - 
+		      e.gc.textExtent(i + "").x / 2);
+	    e.gc.drawText(i + "", x, getSize().y - bottomPadding - getPoint(i, 0).y);
 	}
     }
 
-    public void drawContent(PaintEvent e) {
-	//soon
-    }
-
-    public void drawOrdinateNumbers(PaintEvent e) {
+    private void drawOrdinateNumbers(PaintEvent e) {
 	int step = (int)(getMaxValue() / countNumbersOnOrdinate(e));
 	step -= step % 10;
-	for (int i = 0, value = step; value <= getMaxValue() ; i++, value += step) {
-	    e.gc.drawText(value + "", 0, getSize().y - bottomPadding - getPoint(0, value).y - 10);
+	for (int i = 0, value = step, y = 0; value <= getMaxValue() ; i++, value += step) {
+	    y = getSize().y - bottomPadding - getPoint(0, value).y;
+	    e.gc.drawLine(leftPadding - 2, y + e.gc.textExtent(value + "").y / 2, 
+			  leftPadding + 2, y + e.gc.textExtent(value + "").y / 2);
+	    e.gc.drawText(value + "", 0, y);
+	}
+    }
+
+    private void drawContent(PaintEvent e) {
+	e.gc.setBackground(background);
+	for (int i = 0, x = 0, y = 0; i < values.length; i++) {
+	    x = getPoint(i, values[i]).x;
+	    y = getPoint(i, values[i]).y;
+	    e.gc.fillRectangle(leftPadding + x, getSize().y - y - bottomPadding,
+			       (int)getXStep(), y);
+	    e.gc.drawRectangle(leftPadding + x, getSize().y - y - bottomPadding,
+			       (int)getXStep(), y);
 	}
     }
     
@@ -115,7 +134,9 @@ public class GraphPane extends Composite {
 	shell.setLayout(new FillLayout());
 	GraphPane graphPane = new GraphPane(shell, SWT.NONE);
 	graphPane.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,9,1200});
-	graphPane.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,9,1200, 1300});
+	graphPane.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,94,1200, 1300,
+					 15,34,54,65,76,8,787,998,90,90,94,1200, 1300, 43, 78,
+					 756, 4320, 456});
 	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
