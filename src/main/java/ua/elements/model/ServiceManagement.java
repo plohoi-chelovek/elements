@@ -44,6 +44,30 @@ public class ServiceManagement {
     				 });
     }
 
+    public List<Service> selectByMonth(int year, int month) {
+	Calendar cal = new GregorianCalendar(year, month - 1, 1);
+	java.util.Date begin = cal.getTime();
+	cal.add(Calendar.MONTH, 1);
+	java.util.Date end = cal.getTime();
+
+	return dm.template.query("SELECT name, price, time FROM service " +
+				 "WHERE time BETWEEN ? AND ? " +
+				 "ORDER BY time DESC",
+				 new Object[]{begin, end},
+				 new int[]{Types.TIMESTAMP, Types.TIMESTAMP},
+    				 new RowMapper<Service>() {
+    				     public Service mapRow(ResultSet rs, int rofwNum) {
+    					 try {
+					     return new Service(rs.getString("name"),
+    								rs.getDouble("price"),
+    								rs.getTimestamp("time"));
+    					 } catch (SQLException e) {
+    					     throw new RuntimeException(e.getMessage());
+    					 }
+    				     }
+    				 });
+    }
+
 
     public void addServiceManagementListener(ServiceManagementListener l) {
     	listeners.add(ServiceManagementListener.class, l);

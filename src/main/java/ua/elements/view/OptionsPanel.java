@@ -36,8 +36,7 @@ public class OptionsPanel extends Composite {
     public OptionsPanel(Composite parent, int style) {
 	super(parent, style);
 	setLayout(new OptionsPanelLayout());
-	// setBackground(background);
-	setBackgroundImage(new Image(null, getClass().getResourceAsStream("/background.png")));
+	setBackground(background);
 
 	syncMessageDialog = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
 	syncMessageDialog.setMessage("Для дальнейшей работы программы необходима перезагрузка");

@@ -21,6 +21,9 @@ public class RegisterPane extends Composite {
     private String[] selectionTitles = {"Приход", "Расход", "Услуги"};
 
     private TablePanel tablePanel;
+
+    private DatePane datePane;
+
     private Button backButton;
     
     private EventListenerList listeners = new EventListenerList();
@@ -41,6 +44,8 @@ public class RegisterPane extends Composite {
 	data.heightHint = 20;
 	tablePanel.setLayoutData(data);
 
+	datePane = new DatePane(this, SWT.NONE);
+
 	backButton = new Button(this, SWT.NONE);
 	backButton.setText("Назад");
 	backButton.addSelectionListener(new SelectionAdapter() {
@@ -48,7 +53,7 @@ public class RegisterPane extends Composite {
 		    fireChoiceSelected("cancel");
 		}
 	    });
-	backButton.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, true));
+	backButton.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, false, false));
     }
 
     public void addChoiceListener(ChoiceListener l) {
@@ -76,9 +81,10 @@ public class RegisterPane extends Composite {
 	private String[] arrivalTitles = {"Наименование", "Стоимость", "Количество", "Дата"};
 	private Table charge;
 	private String[] chargeTitles = {"Наименование", "Количество", "Дата"};
-	private Table selected;
-	private String[] serviceTitles = {"Наименование", "Стоимость", "Дата"};
 	private Table service;
+	private String[] serviceTitles = {"Наименование", "Стоимость", "Дата"};
+	private Table selected;
+
 	
 	public TablePanel(Composite parent, int style) {
 	    super(parent, style);
@@ -108,7 +114,12 @@ public class RegisterPane extends Composite {
 			    //nothing
 			}
 		    });
-	    for (Product product : App.getDataManagement().getProductManagement().selectAll()) {
+	    
+	    Calendar cal = new GregorianCalendar();
+	    cal.setTime(new Date());
+
+	    for (Product product : App.getDataManagement().getProductManagement().
+		     selectByMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1)) {
 		TableItem arrivalItem = new TableItem (arrival, SWT.NONE);
 		arrivalItem.setText(0, product.getName());
 		arrivalItem.setText(1, "" + product.getPrice());
@@ -141,7 +152,7 @@ public class RegisterPane extends Composite {
 		    });
 	    
 	    for (Product product : App.getDataManagement().getProductManagement().
-		     selectAllCharge()) {
+		     selectChargeByMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1)) {
 		TableItem chargeItem = new TableItem(charge, SWT.NONE);
 		chargeItem.setText(0, product.getName());
 		chargeItem.setText(1, "" + product.getCount());
@@ -168,7 +179,8 @@ public class RegisterPane extends Composite {
 			    serviceItem.setText(2, dateFormatter.format(service.getTime()));
 			}
 		    });
-	    for (Service s : App.getDataManagement().getServiceManagement().selectAll()) {
+	    for (Service s : App.getDataManagement().getServiceManagement().
+		     selectByMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1)) {
 		TableItem serviceItem = new TableItem(service, SWT.NONE);
 		serviceItem.setText(0, s.getName());
 		serviceItem.setText(1, "" + s.getPrice());
@@ -202,9 +214,34 @@ public class RegisterPane extends Composite {
 	    layout(true);
 	}
 
-	private class DatePane extends Canvas {
-	    public DatePane(Composite parent, int style) {
-		super(parent, style);
+	public void timeChanged(int year, int month) {
+	    arrival.removeAll();
+	    charge.removeAll();
+	    service.removeAll();
+	 
+	    for (Product product : App.getDataManagement().getProductManagement().
+		     selectByMonth(year, month)) {
+		TableItem arrivalItem = new TableItem (arrival, SWT.NONE);
+		arrivalItem.setText(0, product.getName());
+		arrivalItem.setText(1, "" + product.getPrice());
+		arrivalItem.setText(2, "" + product.getCount());
+		arrivalItem.setText(3, dateFormatter.format(product.getTime()));
+	    }
+
+	    for (Product product : App.getDataManagement().getProductManagement().
+		     selectChargeByMonth(year, month)) {
+		TableItem chargeItem = new TableItem(charge, SWT.NONE);
+		chargeItem.setText(0, product.getName());
+		chargeItem.setText(1, "" + product.getCount());
+		chargeItem.setText(2, dateFormatter.format(product.getTime()));
+	    }
+
+	    for (Service s : App.getDataManagement().getServiceManagement().
+		     selectByMonth(year, month)) {
+		TableItem serviceItem = new TableItem(service, SWT.NONE);
+		serviceItem.setText(0, s.getName());
+		serviceItem.setText(1, "" + s.getPrice());
+		serviceItem.setText(2, dateFormatter.format(s.getTime()));
 	    }
 	}
 
@@ -219,6 +256,62 @@ public class RegisterPane extends Composite {
 	    }
 	}
     }
+
+    private class DatePane extends Composite {
+	private Combo year;
+	private String[] yearTitles;
+	private Combo month;
+	private String[] monthTitles = {"Январь", "Февраль", "Март", "Апрель",
+					"Май", "Июнь", "Июль", "Август",
+					"Сентябрь", "Октябрь",  "Ноябрь" , "Декабрь"};
+	private Button show;
+
+	public DatePane(Composite parent, int style) {
+	    super(parent, style);
+
+	    GridLayout layout = new GridLayout();
+	    layout.numColumns = 3;
+	    setLayout(layout);
+		
+	    Calendar cal = new GregorianCalendar();
+	    cal.setTime(new Date());
+	    yearTitles = new String[20];
+	    for (int i = 0; i < yearTitles.length; i++)
+		yearTitles[i] = String.format("%d", cal.get(Calendar.YEAR) - i);
+
+	    year = new Combo(this, SWT.NONE);
+	    year.setItems(yearTitles);
+	    year.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	    year.select(0);
+	    year.addSelectionListener(new SelectionAdapter() {
+		    public void widgetSelected(SelectionEvent e) {
+			//nonthing
+		    }
+		});
+
+	    month = new Combo(this, SWT.NONE);
+	    month.setItems(monthTitles);
+	    month.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	    month.select(cal.get(Calendar.MONTH));
+	    month.addSelectionListener(new SelectionAdapter() {
+		    public void widgetSelected(SelectionEvent e) {
+			//nothing
+		    }
+		});
+
+	    show = new Button(this, SWT.NONE);
+	    show.setText("Показать");
+	    show.addSelectionListener(new SelectionAdapter() {
+		    public void widgetSelected(SelectionEvent e) {
+			tablePanel.timeChanged(Integer.parseInt(year.getText()), 
+					       month.getSelectionIndex() + 1);
+		    }
+		});
+	    show.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	}
+    }
+
+
 
     private class SelectionHandler extends SelectionAdapter {
 	public void widgetSelected(SelectionEvent e) {

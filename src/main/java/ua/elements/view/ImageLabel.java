@@ -16,9 +16,9 @@ public class ImageLabel extends Canvas {
     
     private Font font = new Font(null, "Courier", 16, SWT.BOLD);
 
-    private int leftPadding = 80;
+    private int leftPadding = 180;
     private int topPadding = 80;
-    private int rightPadding = 80;
+    private int rightPadding = 180;
     private int bottomPadding = 25;
 
     private String[] text = {"DEFAULT"};
