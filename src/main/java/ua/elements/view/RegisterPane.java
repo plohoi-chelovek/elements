@@ -202,6 +202,12 @@ public class RegisterPane extends Composite {
 	    layout(true);
 	}
 
+	private class DatePane extends Canvas {
+	    public DatePane(Composite parent, int style) {
+		super(parent, style);
+	    }
+	}
+
 	private class TablePanelLayout extends Layout {
 	    protected Point computeSize(Composite composite, int wHint, int hHint,
 					boolean changed) {

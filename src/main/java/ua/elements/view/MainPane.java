@@ -12,6 +12,7 @@ public class MainPane extends Composite {
     private ChargePane charge;
     private ServicePane service;
     private RegisterPane register;
+    private GraphView graph;
     private Composite current;
 
     public MainPane(Composite parent, int style) {
@@ -73,6 +74,18 @@ public class MainPane extends Composite {
 	register.pack();
 	register.setVisible(false);
 
+	graph = new GraphView(this, SWT.NONE);
+	graph.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
+	graph.pack();
+	graph.setVisible(false);
+
 	current = options;
     }
 
@@ -103,6 +116,8 @@ public class MainPane extends Composite {
 		current = service;
 	    else if (event.getOption().equals("registerOption"))
 		current = register;
+	    else if (event.getOption().equals("graphOption"))
+		current = graph;
 	    current.setVisible(true);
 	    layout(true);
 	}

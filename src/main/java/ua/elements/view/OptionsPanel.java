@@ -24,6 +24,8 @@ public class OptionsPanel extends Composite {
     private ImageLabel backupLabel;
     private MessageBox backupMessageDialog;
 
+    private ImageLabel graphLabel;
+
     private ImageLabel arrivalLabel;
     private ImageLabel chargeLabel;
     private ImageLabel servicesLabel;
@@ -76,6 +78,15 @@ public class OptionsPanel extends Composite {
 			if (!App.getDataManagement().dump(new File(file))) {
 			    backupMessageDialog.open();
 			}
+		}
+	    });
+
+	graphLabel = new ImageLabel(this, SWT.NONE, 20, 5, 20, 0);
+	graphLabel.setText("");
+	graphLabel.setImage(new Image(null, getClass().getResourceAsStream("/graph.png")));
+	graphLabel.addMouseListener(new MouseAdapter() {
+		public void mouseUp(MouseEvent e) {
+		    fireOptionSelected("graphOption");
 		}
 	    });
 
@@ -173,6 +184,7 @@ public class OptionsPanel extends Composite {
 				    registerLabel.computeSize(SWT.NONE, SWT.NONE, false).y);
 	    syncLabel.setLocation(getSize().x - syncLabel.getSize().x, 0);
 	    backupLabel.setLocation(syncLabel.getLocation().x - backupLabel.getSize().x, 0);
+	    graphLabel.setLocation(backupLabel.getLocation().x - graphLabel.getSize().x, 0);
 	}
     }
 

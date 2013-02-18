@@ -30,7 +30,8 @@ public class ProductManagement {
     }
     
     public List<Product> selectAll() {
-    	return dm.template.query("SELECT name, price, count, time FROM product",
+    	return dm.template.query("SELECT name, price, count, time FROM product " +
+				 "ORDER BY time DESC",
     				 new RowMapper<Product>() {
     				     public Product mapRow(ResultSet rs, int rofwNum) {
     					 try {
@@ -78,7 +79,7 @@ public class ProductManagement {
 
 	for (Product product : selectByMonth(year, month)) {
 	    cal.setTime(product.getTime());
-	    values[cal.get(Calendar.DAY_OF_MONTH) - 1] += product.getPrice();
+	    values[cal.get(Calendar.DAY_OF_MONTH) - 1] += product.getPrice() * product.getCount();
 	}
 	return values;
     }

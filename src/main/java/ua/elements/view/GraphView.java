@@ -1,5 +1,12 @@
 package ua.elements.view;
 
+import ua.elements.*;
+import ua.elements.model.*;
+
+import java.util.*;
+
+import javax.swing.event.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
@@ -10,14 +17,16 @@ public class GraphView extends Composite {
     private GraphPane graphPane;
 
     private Combo year;
-    private String[] yearTitles = {"2012", "2013", "2014"};
+    private String[] yearTitles;
     private Combo month;
     private String[] monthTitles = {"Январь", "Февраль", "Март", "Апрель",
 				    "Май", "Июнь", "Июль", "Август",
 				    "Сентябрь", "Октябрь",  "Ноябрь" , "Декабрь"};
-    private Combo day;
 
     private Button show;
+    private Button back;
+
+    private EventListenerList listeners = new EventListenerList();
 
     public GraphView(Composite parent, int style) {
 	super(parent, style);
@@ -31,24 +40,92 @@ public class GraphView extends Composite {
 	graphData.widthHint = 400;
 	graphPane.setLayoutData(graphData);
 	
+	Calendar cal = new GregorianCalendar();
+	cal.setTime(new Date());
+	yearTitles = new String[20];
+	for (int i = 0; i < yearTitles.length; i++)
+	    yearTitles[i] = String.format("%d", cal.get(Calendar.YEAR) - i);
+
 	year = new Combo(this, SWT.NONE);
 	year.setItems(yearTitles);
 	year.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	year.select(0);
+	year.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+		    //nonthing
+		}
+	    });
 
 	month = new Combo(this, SWT.NONE);
 	month.setItems(monthTitles);
 	month.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	month.select(cal.get(Calendar.MONTH));
+	month.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+		    //nothing
+		}
+	    });
 
-	day = new Combo(this, SWT.NONE);
-	day.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-	
 	show = new Button(this, SWT.NONE);
 	show.setText("Показать");
 	show.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	show.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+		    setValues(App.getDataManagement().getProductManagement().
+			      getValues(Integer.parseInt(year.getText()),
+					month.getSelectionIndex() + 1));
+		}
+	    });
+	
+	back = new Button(this, SWT.NONE);
+	back.setText("Вернуться");
+	back.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+	back.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+		    fireChoiceSelected("cancel");
+		}
+	    });
+
+	App.getDataManagement().getProductManagement().
+	    addProductManagementListener(new ProductManagementListener() {
+		    public void productInserted(ProductManagementEvent event) {
+			setValues(App.getDataManagement().getProductManagement().
+				  getValues(Integer.parseInt(year.getText()),
+					    month.getSelectionIndex() + 1));
+		    }
+
+		    public void productChargeInserted(ProductManagementEvent event) {
+			//nothing
+		    }
+		});
+
+	setValues(App.getDataManagement().getProductManagement().
+		  getValues(Integer.parseInt(year.getText()),
+			    month.getSelectionIndex() + 1));
+
+	
     }
 
     public void setValues(double[] values) {
 	graphPane.setValues(values);
+    }
+
+    public void addChoiceListener(ChoiceListener l) {
+	listeners.add(ChoiceListener.class, l);
+    }
+
+    public void removeChoiceListener(ChoiceListener l) {
+	listeners.remove(ChoiceListener.class, l);
+    }
+
+    private void fireChoiceSelected(String choice) {
+	ChoiceEvent event = new ChoiceEvent(this, choice);
+	Object[] l = listeners.getListenerList();
+	for (int i = l.length-2; i>=0; i-=2) {
+	    if (l[i]==ChoiceListener.class) {
+		((ChoiceListener)l[i+1]).choiceSelected(event);
+	    }
+	}
     }
 
     private class GraphPane extends Composite {
@@ -133,6 +210,7 @@ public class GraphView extends Composite {
 	    this.values = values;
 	    maxValue = -1;
 	    leftPadding = -1;
+	    redraw();
 	}
 
 	public double[] getValues() {

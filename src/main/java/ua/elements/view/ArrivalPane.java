@@ -4,6 +4,7 @@ import ua.elements.*;
 import ua.elements.model.*;
 
 import java.util.*;
+import java.text.*;
 
 import javax.swing.event.*;
 
@@ -19,6 +20,9 @@ public class ArrivalPane extends Composite {
     private Text name;
     private Text count;
     private Text price;
+    private Text time;
+
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd в HH:mm:ss");
 
     private EventListenerList listeners = new EventListenerList();
     
@@ -58,6 +62,17 @@ public class ArrivalPane extends Composite {
 	GridData priceData = new GridData();
 	priceData.widthHint = 200;
 	price.setLayoutData(priceData);
+
+	Label timeLabel = new Label(this, SWT.NONE);
+	timeLabel.setText("Время");
+	timeLabel.setBackground(background);
+	timeLabel.setForeground(foreground);
+
+	time = new Text(this, SWT.BORDER);
+	time.setText(dateFormatter.format(new Date()));
+	GridData timeData = new GridData();
+	timeData.widthHint = 200;
+	time.setLayoutData(timeData);
 	
 	ButtonsPane buttonsPane = new ButtonsPane(this, SWT.NONE);
 	GridData data = new GridData();
@@ -99,10 +114,11 @@ public class ArrivalPane extends Composite {
 			try {
 			    Product product = 
 				new Product(name.getText(), Double.parseDouble(price.getText()),
-					    Integer.parseInt(count.getText()), new Date());
+					    Integer.parseInt(count.getText()), 
+					    dateFormatter.parse(time.getText()));
 			    App.getDataManagement().getProductManagement().insert(product);
 			    fireChoiceSelected("add");
-			} catch (NumberFormatException ex) {}
+			} catch (Exception ex) {}
 		    }
 		});
 	    cancelButton = new Button(this, SWT.PUSH);

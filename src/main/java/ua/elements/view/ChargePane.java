@@ -4,6 +4,7 @@ import ua.elements.*;
 import ua.elements.model.*;
 
 import java.util.*;
+import java.text.*;
 
 import javax.swing.event.*;
 
@@ -18,6 +19,9 @@ public class ChargePane extends Composite {
     private Color foreground = new Color(null, 0, 175, 240);
     private Text name;
     private Text count;
+    private Text time;
+
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd в HH:mm:ss");
 
     private EventListenerList listeners = new EventListenerList();
     
@@ -47,6 +51,17 @@ public class ChargePane extends Composite {
 	GridData countData = new GridData();
 	countData.widthHint = 200;
 	count.setLayoutData(countData);
+
+	Label timeLabel = new Label(this, SWT.NONE);
+	timeLabel.setText("Время");
+	timeLabel.setBackground(background);
+	timeLabel.setForeground(foreground);
+
+	time = new Text(this, SWT.BORDER);
+	time.setText(dateFormatter.format(new Date()));
+	GridData timeData = new GridData();
+	timeData.widthHint = 200;
+	time.setLayoutData(timeData);
 
 	ButtonsPane buttonsPane = new ButtonsPane(this, SWT.NONE);
 	GridData data = new GridData();
@@ -85,12 +100,13 @@ public class ChargePane extends Composite {
 	    okButton.addSelectionListener(new SelectionAdapter() {
 		    public void widgetSelected(SelectionEvent e) {
 			try {
-			Product product = 
-			    new Product(name.getText(), 0.0,
-					Integer.parseInt(count.getText()), new Date());
-			App.getDataManagement().getProductManagement().insertToCharge(product);
-			fireChoiceSelected("add");
-			} catch (NumberFormatException ex) {}
+			    Product product = 
+				new Product(name.getText(), 0.0,
+					    Integer.parseInt(count.getText()), 
+					    dateFormatter.parse(time.getText()));
+			    App.getDataManagement().getProductManagement().insertToCharge(product);
+			    fireChoiceSelected("add");
+			} catch (Exception ex) {}
 		    }
 		});
 	    cancelButton = new Button(this, SWT.PUSH);
