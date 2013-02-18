@@ -68,6 +68,21 @@ public class ServiceManagement {
     				 });
     }
 
+    public double[] getValues(int year, int month) {
+	GregorianCalendar cal = new GregorianCalendar(year, month - 1, 1);
+
+	double[] values = new double[cal.getActualMaximum(Calendar.DAY_OF_MONTH)];
+	for (int i = 0; i < values.length; i++)
+	    values[i] = 0.0;
+
+	for (Service service : selectByMonth(year, month)) {
+	    cal.setTime(service.getTime());
+	    values[cal.get(Calendar.DAY_OF_MONTH) - 1] += service.getPrice();
+	}
+
+	return values;
+    }
+
 
     public void addServiceManagementListener(ServiceManagementListener l) {
     	listeners.add(ServiceManagementListener.class, l);

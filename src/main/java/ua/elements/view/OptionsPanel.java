@@ -25,7 +25,8 @@ public class OptionsPanel extends Composite {
     private MessageBox backupMessageDialog;
 
     private ImageLabel graphLabel;
-
+    private ImageLabel serviceGraph;
+    
     private ImageLabel arrivalLabel;
     private ImageLabel chargeLabel;
     private ImageLabel servicesLabel;
@@ -86,6 +87,15 @@ public class OptionsPanel extends Composite {
 	graphLabel.addMouseListener(new MouseAdapter() {
 		public void mouseUp(MouseEvent e) {
 		    fireOptionSelected("graphOption");
+		}
+	    });
+
+	serviceGraph = new ImageLabel(this, SWT.NONE, 20, 5, 20, 0);
+	serviceGraph.setText("");
+	serviceGraph.setImage(new Image(null, getClass().getResourceAsStream("/servicegraph.png")));
+	serviceGraph.addMouseListener(new MouseAdapter() {
+		public void mouseUp(MouseEvent e) {
+		    fireOptionSelected("serviceGraphOption");
 		}
 	    });
 
@@ -184,6 +194,8 @@ public class OptionsPanel extends Composite {
 	    syncLabel.setLocation(getSize().x - syncLabel.getSize().x, 0);
 	    backupLabel.setLocation(syncLabel.getLocation().x - backupLabel.getSize().x, 0);
 	    graphLabel.setLocation(backupLabel.getLocation().x - graphLabel.getSize().x, 0);
+	    serviceGraph.setLocation(graphLabel.getLocation().x - 
+				     serviceGraph.getSize().x, 0);
 	}
     }
 

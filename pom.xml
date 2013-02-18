@@ -36,8 +36,21 @@
 	</executions>
         <configuration>
 	   <!-- <mainClass>ua.elements.model.ProductManagement</mainClass> -->
-	  <!-- <mainClass>ua.elements.App</mainClass> -->
-	  <mainClass>ua.elements.view.GraphView</mainClass>
+	  <mainClass>ua.elements.App</mainClass>
+	  <!-- <mainClass>ua.elements.view.GraphView</mainClass> -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>ua.elements.App</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
         </configuration>
       </plugin>
     </plugins>

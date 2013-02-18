@@ -3,6 +3,7 @@ package ua.elements.view;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 public class MainPane extends Composite {
@@ -13,12 +14,13 @@ public class MainPane extends Composite {
     private ServicePane service;
     private RegisterPane register;
     private GraphView graph;
+    private ServiceGraphView serviceGraph;
     private Composite current;
 
     public MainPane(Composite parent, int style) {
 	super(parent, style);
 	((Shell)parent).setLayout(new FillLayout());
-
+	setMenuBar((Shell)parent);
 	setBackground(background);
 	setLayout(new MainPaneLayout());
 
@@ -86,7 +88,38 @@ public class MainPane extends Composite {
 	graph.pack();
 	graph.setVisible(false);
 
+	serviceGraph = new ServiceGraphView(this, SWT.NONE);
+	serviceGraph.addChoiceListener(new ChoiceListener() {
+		public void choiceSelected(ChoiceEvent event) {
+		    current.setVisible(false);
+		    current = options;
+		    current.setVisible(true);
+		    layout();
+		}
+	    });
+	serviceGraph.pack();
+	serviceGraph.setVisible(false);
+
 	current = options;
+    }
+
+    private void setMenuBar(Shell shell) {
+	Menu menuBar = new Menu(shell, SWT.BAR);
+
+	MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+	fileMenuHeader.setText("Управление");
+
+	Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
+	fileMenuHeader.setMenu(fileMenu);
+
+	MenuItem fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
+	fileExitItem.setText("Выход из программы");
+	fileExitItem.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+		    System.exit(0);
+		}
+	    });
+	shell.setMenuBar(menuBar);
     }
 
     /* INNER CLASS PART */
@@ -118,6 +151,8 @@ public class MainPane extends Composite {
 		current = register;
 	    else if (event.getOption().equals("graphOption"))
 		current = graph;
+	    else if (event.getOption().equals("serviceGraphOption"))
+		current = serviceGraph;
 	    current.setVisible(true);
 	    layout(true);
 	}

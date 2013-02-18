@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 
-public class GraphView extends Composite {
+public class ServiceGraphView extends Composite {
     private Label title;
     private GraphPane graphPane;
 
@@ -29,7 +29,7 @@ public class GraphView extends Composite {
 
     private EventListenerList listeners = new EventListenerList();
 
-    public GraphView(Composite parent, int style) {
+    public ServiceGraphView(Composite parent, int style) {
 	super(parent, style);
 
 	GridLayout layout = new GridLayout();
@@ -40,8 +40,8 @@ public class GraphView extends Composite {
 	title = new Label(this, SWT.CENTER);
 	title.setFont(new Font(null, "Courier", 16, SWT.BOLD));
 	title.setBackground(new Color(null, 255, 255, 255));
-	title.setForeground(new Color(null, 0, 175, 240));
-	title.setText("График прихода");
+	title.setForeground(new Color(null, 209, 25, 25));
+	title.setText("График оказания услуг");
 	title.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 
 	graphPane = new GraphPane(this, SWT.NONE);
@@ -80,7 +80,7 @@ public class GraphView extends Composite {
 	show.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 	show.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
-		    setValues(App.getDataManagement().getProductManagement().
+		    setValues(App.getDataManagement().getServiceManagement().
 			      getValues(Integer.parseInt(year.getText()),
 					month.getSelectionIndex() + 1));
 		}
@@ -95,20 +95,16 @@ public class GraphView extends Composite {
 		}
 	    });
 
-	App.getDataManagement().getProductManagement().
-	    addProductManagementListener(new ProductManagementListener() {
-		    public void productInserted(ProductManagementEvent event) {
-			setValues(App.getDataManagement().getProductManagement().
+	App.getDataManagement().getServiceManagement().
+	    addServiceManagementListener(new ServiceManagementListener() {
+		    public void serviceInserted(ServiceManagementEvent event) {
+			setValues(App.getDataManagement().getServiceManagement().
 				  getValues(Integer.parseInt(year.getText()),
 					    month.getSelectionIndex() + 1));
 		    }
-
-		    public void productChargeInserted(ProductManagementEvent event) {
-			//nothing
-		    }
 		});
 
-	setValues(App.getDataManagement().getProductManagement().
+	setValues(App.getDataManagement().getServiceManagement().
 		  getValues(Integer.parseInt(year.getText()),
 			    month.getSelectionIndex() + 1));
 
@@ -147,7 +143,7 @@ public class GraphView extends Composite {
 
 	private double maxValue = -1;
 
-	private Color background = new Color(null, 0, 175, 240);
+	private Color background = new Color(null, 209, 25, 25);
 	private Color background2 = new Color(null, 255, 255, 255);
 
 	private Font font = new Font(null, "Courier", 12, SWT.BOLD);
@@ -264,24 +260,6 @@ public class GraphView extends Composite {
 		//soon
 	    }
 	}
-    }
-
-    public static void main(String[] args) {
-	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setLayout(new FillLayout());
-	GraphView graphView = new GraphView(shell, SWT.NONE);
-	// graphView.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,9,1200});
-	graphView.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,94,1200, 1300,
-					 15,34,54,65,76,8,787,998,90,90,94,1200, 1300, 43, 78,
-					 756, 4320, 456});
-	shell.pack();
-	shell.open();
-	while (!shell.isDisposed()) {
-	    if (!display.readAndDispatch()) 
-		display.sleep();
-	}
-	display.dispose();
     }
 }
 
