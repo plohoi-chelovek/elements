@@ -45,6 +45,30 @@ public class ProductManagement {
     				 });
     }
 
+    public List<Product> selectByMonth(int year, int month) {
+	Calendar cal = new GregorianCalendar(year, month - 1, 1);
+	java.util.Date begin = cal.getTime();
+	cal.add(Calendar.MONTH, 1);
+	java.util.Date end = cal.getTime();
+
+	return dm.template.query("SELECT name, price, count, time FROM product " +
+				 "WHERE time BETWEEN ? AND ?",
+				 new Object[]{begin, end},
+				 new int[]{Types.TIMESTAMP, Types.TIMESTAMP},
+    				 new RowMapper<Product>() {
+    				     public Product mapRow(ResultSet rs, int rofwNum) {
+    					 try {
+    					     return new Product(rs.getString("name"),
+    								rs.getDouble("price"),
+								rs.getInt("count"),
+    								rs.getTimestamp("time"));
+    					 } catch (SQLException e) {
+    					     throw new RuntimeException(e.getMessage());
+    					 }
+    				     }
+    				 });
+    }
+
     public List<Product> selectAllCharge() {
     	return dm.template.query("SELECT name, count, time FROM charge",
     				 new RowMapper<Product>() {
@@ -88,6 +112,13 @@ public class ProductManagement {
     		((ProductManagementListener)l[i+1]).productChargeInserted(event);
     	    }
     	}
+    }
+
+    /* TESTING */
+    public static void main(String[] args) {
+	DataManagement dataManagement = new DataManagement();
+	ProductManagement pm = dataManagement.getProductManagement();
+	System.out.println(pm.selectByMonth(2013, 2));
     }
 }
 	

@@ -35,6 +35,7 @@
 	  </execution>
 	</executions>
         <configuration>
+	   <!-- <mainClass>ua.elements.model.ProductManagement</mainClass> -->
 	  <!-- <mainClass>ua.elements.App</mainClass> -->
 	  <mainClass>ua.elements.view.GraphView</mainClass>
         </configuration>

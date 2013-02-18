@@ -101,12 +101,15 @@ public class GraphView extends Composite {
 
 	private void drawOrdinateNumbers(PaintEvent e) {
 	    int step = (int)(getMaxValue() / countNumbersOnOrdinate(e));
-	    step -= step % 10;
-	    for (int i = 0, value = step, y = 0; value <= getMaxValue() ; i++, value += step) {
-		y = getSize().y - bottomPadding - getPoint(0, value).y;
-		e.gc.drawLine(leftPadding - 2, y + e.gc.textExtent(value + "").y / 2, 
-			      leftPadding + 2, y + e.gc.textExtent(value + "").y / 2);
-		e.gc.drawText(value + "", 0, y);
+	    if (step > 10)
+		step -= step % 10;
+	    if (step > 0) {
+		for (int i = 0, value = step, y = 0; value <= getMaxValue() ; i++, value += step) {
+		    y = getSize().y - bottomPadding - getPoint(0, value).y;
+		    e.gc.drawLine(leftPadding - 2, y + e.gc.textExtent(value + "").y / 2, 
+				  leftPadding + 2, y + e.gc.textExtent(value + "").y / 2);
+		    e.gc.drawText(value + "", 0, y);
+		}
 	    }
 	}
 
@@ -181,7 +184,7 @@ public class GraphView extends Composite {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	GraphView graphView = new GraphView(shell, SWT.NONE);
-	graphView.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,9,1200});
+	// graphView.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,9,1200});
 	graphView.setValues(new double[]{15,34,54,65,76,8,787,998,90,90,94,1200, 1300,
 					 15,34,54,65,76,8,787,998,90,90,94,1200, 1300, 43, 78,
 					 756, 4320, 456});
