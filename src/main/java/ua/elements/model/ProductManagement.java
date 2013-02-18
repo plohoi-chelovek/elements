@@ -69,6 +69,20 @@ public class ProductManagement {
     				 });
     }
 
+    public double[] getValues(int year, int month) {
+	GregorianCalendar cal = new GregorianCalendar(year, month - 1, 1);
+
+	double[] values = new double[cal.getActualMaximum(Calendar.DAY_OF_MONTH)];
+	for (int i = 0; i < values.length; i++)
+	    values[i] = 0.0;
+
+	for (Product product : selectByMonth(year, month)) {
+	    cal.setTime(product.getTime());
+	    values[cal.get(Calendar.DAY_OF_MONTH) - 1] += product.getPrice();
+	}
+	return values;
+    }
+
     public List<Product> selectAllCharge() {
     	return dm.template.query("SELECT name, count, time FROM charge",
     				 new RowMapper<Product>() {
@@ -118,7 +132,7 @@ public class ProductManagement {
     public static void main(String[] args) {
 	DataManagement dataManagement = new DataManagement();
 	ProductManagement pm = dataManagement.getProductManagement();
-	System.out.println(pm.selectByMonth(2013, 2));
+	System.out.println(Arrays.toString(pm.getValues(2013, 2)));
     }
 }
 	
