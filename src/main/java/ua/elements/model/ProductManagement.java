@@ -15,6 +15,11 @@ public class ProductManagement {
     public ProductManagement(DataManagement dm) {
     	this.dm = dm;
     }
+
+    public boolean isProductNameExist(String name) {
+	return dm.template.queryForInt("SELECT COUNT(*) FROM product WHERE " +
+				       "name = ?", new Object[]{name}) > 0;
+    }
     
     public void insert(Product product) {
     	dm.template.update("INSERT INTO product (name, price, count, time) VALUES(?,?,?,?)",
@@ -23,11 +28,22 @@ public class ProductManagement {
 	fireProductInserted(product);
     }
 
-    public void insertToCharge(Product product) {
-    	dm.template.update("INSERT INTO charge (name, count, time) VALUES(?,?,?)",
-    			   new Object[] {product.getName(), product.getCount(), product.getTime()});
-    	fireProductChargeInserted(product);
+    public boolean insertToCharge(Product product) {
+	if (isProductNameExist(product.getName())) {
+	    dm.template.update("INSERT INTO charge (name, count, time) VALUES(?,?,?)",
+			       new Object[] {product.getName(), product.getCount(), 
+					     product.getTime()});
+	    fireProductChargeInserted(product);
+	    return true;
+	} else {
+	    return false;
+	}
     }
+
+    public String getHint(String text) {
+	return "dell";
+    }
+	
     
     public List<Product> selectAll() {
     	return dm.template.query("SELECT name, price, count, time FROM product " +

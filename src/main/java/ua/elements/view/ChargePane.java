@@ -104,9 +104,11 @@ public class ChargePane extends Composite {
 				new Product(name.getText(), 0.0,
 					    Integer.parseInt(count.getText()), 
 					    dateFormatter.parse(time.getText()));
-			    App.getDataManagement().getProductManagement().insertToCharge(product);
-			    fireChoiceSelected("add");
-			} catch (Exception ex) {}
+			    if (App.getDataManagement().
+				getProductManagement().insertToCharge(product)) {
+				fireChoiceSelected("add");
+			    }
+			} catch (Exception ex) {System.out.println(ex.getMessage());}
 		    }
 		});
 	    cancelButton = new Button(this, SWT.PUSH);
