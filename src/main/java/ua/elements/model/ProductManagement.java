@@ -45,7 +45,7 @@ public class ProductManagement {
 	    dm.template.query("SELECT name, price, count, time FROM product " +
 			      "WHERE name LIKE ? " +
 			      "ORDER BY time DESC",
-			      new Object[]{text+"%"},
+			      new Object[]{text+"_%"},
 			      new RowMapper<Product>() {
 				  public Product mapRow(ResultSet rs, int rofwNum) {
 				      try {
@@ -58,10 +58,18 @@ public class ProductManagement {
 				      }
 				  }
 			      });
-	if (products.size() > 0)
-	    return products.get(Math.random().getName();
-	else
+	if (products.size() > 0) {
+	    int min = products.get(0).getName().length();
+	    int index = 0;
+	    for (int i = 1; i < products.size(); i++)
+		if (products.get(i).getName().length() < min) {
+		    min = products.get(i).getName().length();
+		    index = i;
+		}
+	    return products.get(index).getName();
+	} else {
 	    return null;
+	}
     }
 	
     
