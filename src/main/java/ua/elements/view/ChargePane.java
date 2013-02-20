@@ -122,6 +122,9 @@ public class ChargePane extends Composite {
 				getProductManagement().insertToCharge(product)) {
 				fireChoiceSelected("add");
 			    }
+			    System.out.println(App.getDataManagement().
+					       getProductManagement().
+					       getProductByName(name.getText()));
 			} catch (Exception ex) {System.out.println(ex.getMessage());}
 		    }
 		});

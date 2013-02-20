@@ -6,6 +6,7 @@ import java.sql.*;
 import javax.swing.event.*;
 
 import org.springframework.jdbc.core.*;
+import org.springframework.dao.*;
 
 public class ProductManagement {
     private DataManagement dm;
@@ -17,8 +18,7 @@ public class ProductManagement {
     }
 
     public boolean isProductNameExist(String name) {
-	return dm.template.queryForInt("SELECT COUNT(*) FROM product WHERE " +
-				       "name = ?", new Object[]{name}) > 0;
+	return (getProductByName(name) != null);
     }
     
     public void insert(Product product) {
@@ -37,6 +37,30 @@ public class ProductManagement {
 	    return true;
 	} else {
 	    return false;
+	}
+    }
+    
+    public Product getProductByName(String name) {
+	try {
+	    Product product =
+		dm.template.queryForObject("SELECT name, price, count, time FROM product " +
+					   "WHERE name = ?",
+					   new Object[]{name},
+					   new RowMapper<Product>() {
+					       public Product mapRow(ResultSet rs, int rofwNum) {
+						   try {
+						       return new Product(rs.getString("name"),
+									  rs.getDouble("price"),
+									  rs.getInt("count"),
+									  rs.getTimestamp("time"));
+						   } catch (SQLException e) {
+						       throw new RuntimeException(e.getMessage());
+						   }
+					       }
+					   });
+	    return product;
+	} catch (IncorrectResultSizeDataAccessException e) {
+	    return null;
 	}
     }
 
@@ -121,18 +145,20 @@ public class ProductManagement {
 	cal.add(Calendar.MONTH, 1);
 	java.util.Date end = cal.getTime();
 
-	return dm.template.query("SELECT name, count, time FROM charge " +
-				 "WHERE time BETWEEN ? AND ? " +
-				 "ORDER BY time DESC",
+	return dm.template.query("SELECT charge.name, charge.count, " +
+				 "charge.time, product.price FROM charge, product " +
+				 "WHERE product.name = charge.name AND " +
+				 "charge.time BETWEEN ? AND ? " +
+				 "ORDER BY charge.time DESC",
 				 new Object[]{begin, end},
 				 new int[]{Types.TIMESTAMP, Types.TIMESTAMP},
     				 new RowMapper<Product>() {
     				     public Product mapRow(ResultSet rs, int rofwNum) {
     					 try {
-					     return new Product(rs.getString("name"),
-								0.0,
-								rs.getInt("count"),
-								rs.getTimestamp("time"));
+					     return new Product(rs.getString("charge.name"),
+								rs.getDouble("product.price"),
+								rs.getInt("charge.count"),
+								rs.getTimestamp("charge.time"));
     					 } catch (SQLException e) {
     					     throw new RuntimeException(e.getMessage());
     					 }
