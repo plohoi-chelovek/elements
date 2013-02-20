@@ -21,6 +21,8 @@ public class ChargePane extends Composite {
     private Text count;
     private Text time;
 
+    private boolean hint = false;
+
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd в HH:mm:ss");
 
     private EventListenerList listeners = new EventListenerList();
@@ -40,6 +42,18 @@ public class ChargePane extends Composite {
 	name = new Text(this, SWT.BORDER);
 	GridData nameData = new GridData();
 	nameData.widthHint = 200;
+	name.addSelectionListener(new SelectionAdapter() {
+		public void widgetDefaultSelected(SelectionEvent e) {
+		    if (App.getDataManagement().getProductManagement().
+			getHint(name.getText()) != null) {
+			int caret = name.getCaretPosition();
+			name.setText(App.getDataManagement().getProductManagement().
+				     getHint(name.getText()));
+			name.setSelection(caret, name.getText().length());
+		    }
+		}
+	    });
+		
 	name.setLayoutData(nameData);
 
 	Label countLabel = new Label(this, SWT.NONE);

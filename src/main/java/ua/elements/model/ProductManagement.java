@@ -41,7 +41,27 @@ public class ProductManagement {
     }
 
     public String getHint(String text) {
-	return "dell";
+	List<Product> products = 
+	    dm.template.query("SELECT name, price, count, time FROM product " +
+			      "WHERE name LIKE ? " +
+			      "ORDER BY time DESC",
+			      new Object[]{text+"%"},
+			      new RowMapper<Product>() {
+				  public Product mapRow(ResultSet rs, int rofwNum) {
+				      try {
+					  return new Product(rs.getString("name"),
+							     rs.getDouble("price"),
+							     rs.getInt("count"),
+							     rs.getTimestamp("time"));
+				      } catch (SQLException e) {
+					  throw new RuntimeException(e.getMessage());
+				      }
+				  }
+			      });
+	if (products.size() > 0)
+	    return products.get(Math.random().getName();
+	else
+	    return null;
     }
 	
     
